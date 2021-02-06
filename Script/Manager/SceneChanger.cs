@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class SceneChanger : Singleton<SceneChanger>
 {
     public E_SCENE_TYPE m_sceneType { get; private set; } = E_SCENE_TYPE.NONE;
-    SceneMain m_currentMain { get; set; }
+    public SceneMain m_currentMain { get; set; }
 
     E_SCENE_TYPE m_NextSceneType;
     public string m_NextRoomName;
@@ -20,7 +20,6 @@ public class SceneChanger : Singleton<SceneChanger>
         Debug.Log(gameObject.name + "Initialize Success!!");
         return;
     }
-
 
     public void LoadScene(E_SCENE_TYPE _sceneType)
     {

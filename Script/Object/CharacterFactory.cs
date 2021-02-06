@@ -21,6 +21,9 @@ public abstract class CharacterFactory : IFactory<CharacterBase>
             case E_CHARACTER_TYPE.PLAYER:
                 factory = new PlayerFactory();
                 break;
+            case E_CHARACTER_TYPE.DUMMY_PLAYER:
+                factory = new DummyPlayerFactory();
+                break;
             default:
                 factory = new MonsterFactory();
                 break;
@@ -91,6 +94,46 @@ public class NPCFactory : CharacterFactory
 
 }
 
+public class DummyPlayerFactory : CharacterFactory
+{
+    public DummyPlayerFactory()
+    {
+        type = E_CHARACTER_TYPE.PLAYER;
+    }
+
+    public override CharacterBase CreateObject()
+    {
+        if (m_newCharacter != null)
+        {
+            StatController statContoller = null;
+            statContoller = Common.GetOrAddComponent<StatController>(m_newCharacter.gameObject);
+            statContoller.Init(newCharacterStat.Clone(), 1);
+
+            m_newCharacter.Init(true, type);
+
+            FSMComponent fsm = Common.GetOrAddComponent<FSMComponent>(m_newCharacter.gameObject);
+            fsm.ResetAllState();
+            fsm.InsertState(new RunState());
+            fsm.InsertState(new IdleState());
+            fsm.InsertState(new SkillState());
+            fsm.InsertState(new DeadState());
+            fsm.Init(m_newCharacter);
+
+            m_newCharacter.gameObject.layer = (int)E_LAYER.Character;
+
+            ItemComponent itemComponent = Common.GetOrAddComponent<ItemComponent>(m_newCharacter.gameObject);
+            itemComponent.Initialize(statContoller);
+
+            CharacterManager.Instance.m_CurrentMyCharacter = m_newCharacter;
+
+            return m_newCharacter;
+        }
+
+        return null;
+    }
+
+}
+
 public class PlayerFactory : CharacterFactory
 {
     public PlayerFactory()
@@ -123,6 +166,8 @@ public class PlayerFactory : CharacterFactory
 
             ItemComponent itemComponent = Common.GetOrAddComponent<ItemComponent>(m_newCharacter.gameObject);
             itemComponent.Initialize(statContoller);
+
+            CharacterManager.Instance.m_CurrentMyCharacter = m_newCharacter;
 
             return m_newCharacter;
         }

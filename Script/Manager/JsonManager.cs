@@ -28,12 +28,12 @@ public class JsonManager : Singleton<JsonManager>
     {
         string jsonData;
 
-        if(!PlayerPrefs.HasKey("buyList"))
+        if(!PlayerPrefs.HasKey(_keyPlayerPrefs))
         {
             return null;
         }
 
-        jsonData = PlayerPrefs.GetString("buyList");
+        jsonData = PlayerPrefs.GetString(_keyPlayerPrefs);
         T data = JsonToOject<T>(jsonData);
 
         return data;

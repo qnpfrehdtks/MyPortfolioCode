@@ -4,12 +4,9 @@ using UnityEngine;
 
 public class TitleMain : SceneMain
 {
-    GameObject m_WoodPrefab;
 
     protected override void Awake()
     {
-
-
         base.Awake();
     }
 

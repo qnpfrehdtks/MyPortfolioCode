@@ -5,7 +5,7 @@ using UnityEngine;
 public class ItemComponent : MonoBehaviour
 {
     ICombatEntity m_Character;
-    Dictionary<E_ITEMCATEGORY, Item> m_myItemTable;
+    Dictionary<E_ITEMCATEGORY, Item> m_myItemTable = new Dictionary<E_ITEMCATEGORY, Item>();
     public void Initialize(ICombatEntity characterBase)
     {
         m_Character = characterBase;
@@ -41,6 +41,7 @@ public class ItemComponent : MonoBehaviour
         {
             item.UnEquip();
             m_myItemTable.Remove(category);
+            Debug.Log($"Item Dequip Success Part : {item.ItemCategory}, itemUID : {item.ItemUID}, item : {item.ItemID}");
 
             if (updateStat)
                 SavePlayerItemData();
@@ -49,17 +50,20 @@ public class ItemComponent : MonoBehaviour
         return item;
     }
 
-    public void EquipItem(E_ITEMCATEGORY category, Item item)
+    public bool EquipItem(Item item)
     {
-        if (item == null) return;
-        if (category != item.ItemCategory) return;
-
-        UnEquipItem(category, false);
+        if (item == null) return false;
+        
+        UnEquipItem(item.ItemCategory, false);
 
         item.Equip(m_Character);
-        m_myItemTable.Add(category, item);
+        m_myItemTable.Add(item.ItemCategory, item);
 
+        Debug.Log($"Item Equip Success Part : {item.ItemCategory}, itemUID : {item.ItemUID}, item : {item.ItemID}");
+        
         SavePlayerItemData();
+        return true;
+
     }
 
     public void SavePlayerItemData()
@@ -84,7 +88,7 @@ public class ItemComponent : MonoBehaviour
             {
                 Item item = InventoryManager.Instance.GetItem(i.Value);
                 if (item == null) continue;
-                EquipItem(item.ItemCategory, item);
+                EquipItem(item);
             }
         }
     }

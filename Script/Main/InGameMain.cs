@@ -28,6 +28,6 @@ public class InGameMain : SceneMain
     public override void ExitSceneInit()
     {
         base.ExitSceneInit();
-        CharacterManager.Instance.AllPushCharacter();
+        
     }
 }

@@ -36,6 +36,7 @@ public class StatController : MonoBehaviour, ICombatEntity
     public virtual void Init(Stat stat, int teamID)
     {
         m_playerID = teamID;
+
         m_baseStats = stat;
         m_modifiedStats = stat.Clone();
 

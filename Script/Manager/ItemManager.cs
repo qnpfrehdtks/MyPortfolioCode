@@ -7,10 +7,8 @@ class SerializeItemTable : ISerializationCallbackReceiver
 {
     public Dictionary<string, string> m_Dic = new Dictionary<string, string>();
 
-    [SerializeField]
-    List<string> keys;
-    [SerializeField]
-    List<string> values;
+    public List<string> keys;
+    public List<string> values;
 
     public void OnBeforeSerialize()
     {
@@ -30,6 +28,16 @@ class SerializeItemTable : ISerializationCallbackReceiver
 
     public void insertItem(string type, string info)
     {
+        if(m_Dic.ContainsKey(type))
+        {
+            Debug.LogError($"Duplicated Item UID : {type}, ItemID : {info}");
+            return;
+        }
+        else
+        {
+            Debug.Log($"Success Insert Equip ItemData!! Item UID : {type}, ItemID : {info}");
+        }
+
         m_Dic.Add(type, info);
     }
 }
@@ -45,10 +53,11 @@ public class ItemManager : Singleton<ItemManager>
 
     public string CreateItemUID(ItemStat stat)
     {
-         string str1 = System.DateTime.Today.ToString("yyyyMMdd");
-         string str2 = System.DateTime.Now.ToString("HHmmss");
-
-        string uid = str1 + str2 + stat.dataID;
+        string str1 = System.DateTime.Today.ToString("yyMMdd");
+        string str2 = System.DateTime.Now.ToString("HHmmss");
+        int str3 = Random.Range(0, 99999);
+        
+        string uid = str1 + str2 + str3 + "_" + stat.dataID;
         return uid;
     }
 
@@ -65,7 +74,8 @@ public class ItemManager : Singleton<ItemManager>
            UID = CreateItemUID(stat);
         }
 
-        item.Init(stat, UID);
+        Debug.Log($"Create Item!! : UID : {UID}, ID : {itemID}");
+        item.Init(stat.Clone() as ItemStat, UID);
         return item;
     }
 

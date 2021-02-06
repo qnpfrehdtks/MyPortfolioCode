@@ -12,8 +12,8 @@ public class MenuMain : SceneMain
     public override void OnInitializeScene()
     {
         SoundManager.Instance.PlayBGM(E_BGM.TITLE);
-    //    EffectManager.Instance.InitializeManager();
         PoolingManager.Instance.PushAllObjectToPool();
+        CharacterManager.Instance.RespawnCharacter(CharacterID.PLAYER_BASEMAGICIAN, new Vector3(3, 0.5f, 3), Quaternion.identity, E_CHARACTER_TYPE.DUMMY_PLAYER);
         UIManager.Instance.ShowUIScene(E_SCENE_UI_TYPE.MAIN);
     }
 

@@ -146,6 +146,8 @@ public class CharacterBase : MonoBehaviour, IPoolingObject
     
     public void InitHealthBar()
     {
+        if (SceneChanger.Instance.m_sceneType != E_SCENE_TYPE.IN_GAME) return;
+
         if (m_isMyCharacter || m_HealthBar != null) return;
         m_HealthBar = UIManager.Instance.AttachHealthBarToObject(gameObject, Vector3.up * 1.4f , TextBarStyle.NONE);
         if (m_HealthBar == null) return;

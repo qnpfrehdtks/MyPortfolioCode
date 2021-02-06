@@ -13,7 +13,7 @@ public class UI_SkillSlot : UI_BaseSlot<Skill>
 
     enum SkillImage
     {
-        CoolTimeImage = UIImage.SlotImage + 1
+        CoolTimeImage = UIImage.HighLightImage + 1
     }
 
     TMPro.TextMeshProUGUI m_CoolTimeText;
@@ -130,5 +130,15 @@ public class UI_SkillSlot : UI_BaseSlot<Skill>
     protected override void BeginDragBtn(PointerEventData data)
     {
         
+    }
+
+    public override void OnHighLightSlot()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void OffHighLightSlot()
+    {
+        throw new System.NotImplementedException();
     }
 }

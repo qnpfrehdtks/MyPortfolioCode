@@ -38,16 +38,19 @@ public class UI_MyHeroe : UI_Base
 
     void CloseInven(PointerEventData data)
     {
-        UIManager.Instance.ShowUIScene(E_SCENE_UI_TYPE.MAIN);
+        UIManager.Instance.CloseSceneUI(true);
     }
 
     public override void OnShowUp()
     {
         base.OnShowUp();
-        UI_StatSlot[] attackSlot = GetUI<ScrollRect>((int)ScrollRectEnum.StatScroll).gameObject.GetComponentsInChildren<UI_StatSlot>();
+        UI_StatSlot[] statSlot = GetUI<ScrollRect>((int)ScrollRectEnum.StatScroll).gameObject.GetComponentsInChildren<UI_StatSlot>();
 
-        Stat stat = CharacterManager.Instance.GetCharacterData(CharacterID.PLAYER_BASEMAGICIAN);
-        foreach (var slot in attackSlot)
+        if (statSlot == null ) return;
+        if (CharacterManager.Instance.m_CurrentMyCharacter == null) return;
+
+        Stat stat = CharacterManager.Instance.m_CurrentMyCharacter.Stat;
+        foreach (var slot in statSlot)
         {
             slot.SetStatInfo(stat);
         }

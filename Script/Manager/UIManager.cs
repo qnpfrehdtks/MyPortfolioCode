@@ -56,10 +56,22 @@ public class UIManager : Singleton<UIManager>
 
     public int m_currentLayerOrder { private set; get; } = 0;
 
-    Stack<UI_Popup> m_StackUI = new Stack<UI_Popup>();
-
     public UI_Base m_CurrentSceneUI;
-     Canvas m_CurrentSceneUICanvas;
+    Stack<UI_Popup> m_StackPopUI = new Stack<UI_Popup>();
+    Stack<E_SCENE_UI_TYPE> m_StackSceneUI = new Stack<E_SCENE_UI_TYPE>();
+
+    public UI_Popup CurrentTopPopUpUI
+    {
+        get
+        {
+            if (m_StackPopUI.Count == 0)
+                return null;
+
+            return m_StackPopUI.Peek();
+        }
+    }
+
+    Canvas m_CurrentSceneUICanvas;
     RectTransform m_CurrentRectTr;
     
     E_SCENE_UI_TYPE m_sceneType = E_SCENE_UI_TYPE.NONE;
@@ -218,40 +230,76 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
-    public void CloseSceneUI() 
+    public void AllCloseSceneUI()
     {
-       if(m_CurrentSceneUI != null)
-       {
-           ResourceManager.Instance.DestroyObject(m_CurrentSceneUI.gameObject);
-       }
+        while (m_StackSceneUI.Count > 0)
+        {
+            CloseSceneUI(false);
+            m_StackSceneUI.Pop();
+        }
+
+        Debug.Log("UI 전부 비움 : "   + m_StackSceneUI.Count);
+    }
+
+    public void CloseSceneUI(bool NextOpen = false) 
+    {
+        if (m_CurrentSceneUI == null) return;
+
+        ResourceManager.Instance.DestroyObject(m_CurrentSceneUI.gameObject);
         m_CurrentSceneUI = null;
+        Debug.Log("UI 닫기 현재 스택에 있는 갯수 : " + m_StackSceneUI.Count);
+
+        if (NextOpen)
+            ShowNextUIScene();
+    }
+
+    public void ShowNextUIScene()
+    {
+        if (m_StackSceneUI.Count <= 1) return;
+        if (m_sceneType == m_StackSceneUI.Peek()) return;
+
+        CloseSceneUI(false);
+        HideHUDText();
+
+        m_StackSceneUI.Pop();
+        m_sceneType = m_StackSceneUI.Peek();
+
+        GameObject go = ResourceManager.Instance.instantiate<GameObject>("Prefabs/UI/Scene/" + m_sceneType);
+        UI_Base uiBase = go.GetComponentInChildren<UI_Base>();
+
+        if (uiBase != null)
+        {
+            Canvas canvas = uiBase.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = UICamara;
+            canvas.planeDistance = 1.0f;
+            m_CurrentSceneUI = uiBase;
+
+            uiBase.OnShowUp();
+        }
     }
 
     public void ShowUIScene(E_SCENE_UI_TYPE type)
     {
-        if(m_CurrentSceneUI != null && m_sceneType == type)
-        {
-            return;
-        }
+        if (m_sceneType == type) return;
 
-        m_sceneType = type;
-
-        CloseSceneUI();
+        CloseSceneUI(false);
         HideHUDText();
 
         GameObject go = ResourceManager.Instance.instantiate<GameObject>("Prefabs/UI/Scene/" + type.ToString());
-        m_CurrentSceneUI = go.GetComponentInChildren<UI_Base>();
+        UI_Base uiBase = go.GetComponentInChildren<UI_Base>();
 
-        if (m_CurrentSceneUI != null)
+        if (uiBase != null)
         {
-            Canvas canvas = m_CurrentSceneUI.GetComponent<Canvas>();
+            Canvas canvas = uiBase.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = UICamara;
             canvas.planeDistance = 1.0f;
+            m_CurrentSceneUI = uiBase;
 
-            m_CurrentSceneUI.OnShowUp();
+            uiBase.OnShowUp();
+            m_StackSceneUI.Push(type);
         }
-
     }
 
     public void ShowPopUp(string popName, string noticeStr, string str ,System.Action<PointerEventData> okAction, System.Action<PointerEventData> cancleAction)
@@ -274,27 +322,33 @@ public class UIManager : Singleton<UIManager>
 
         popup.InitPopUp(noticeStr, str, okAction, cancleAction);
 
-        m_StackUI.Push(popup);
+        m_StackPopUI.Push(popup);
         return;
+    }
+
+    public void AllClosePopUI()
+    {
+        while (m_StackPopUI.Count > 0)
+        {
+            ClosePopUp();
+        }
     }
 
     public void ClosePopUp()
     {
-        if (m_StackUI.Count == 0)
+        if (CurrentTopPopUpUI == null)
             return;
 
-        UI_Popup popUp = m_StackUI.Pop();
+        UI_Popup popUp = m_StackPopUI.Pop();
         ResourceManager.Instance.DestroyObject(popUp.gameObject);
 
-        if (m_StackUI.Count == 0)
+        if (m_StackPopUI.Count == 0)
         {
             m_currentLayerOrder = 0;
         }
         else
         {
-            UI_Popup peekUI = m_StackUI.Peek();
-            Canvas canvas = Common.GetOrAddComponent<Canvas>(peekUI.gameObject);
-
+            Canvas canvas = Common.GetOrAddComponent<Canvas>(CurrentTopPopUpUI.gameObject);
             m_currentLayerOrder = canvas.sortingOrder;
         }
     }

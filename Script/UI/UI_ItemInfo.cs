@@ -31,6 +31,11 @@ public class UI_ItemInfo : UI_Base
         if (slot != null)
         {
             slot.InitSlot(item);
+
+            if(item != null)
+                slot.gameObject.SetActive(true);
+            else
+                slot.gameObject.SetActive(false);
         }
 
         if (item != null)

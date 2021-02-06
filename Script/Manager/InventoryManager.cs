@@ -11,10 +11,23 @@ public class InventoryManager : Singleton<InventoryManager>
 
     public override void InitializeManager()
     {
-       
-        LoadPlayerInvenData();
-        Item item = ItemManager.Instance.CreateItem("1001");
-        AddItem(item);
+        //LoadPlayerInvenData();
+        //m_dicItemInventory.Clear();
+        //m_dicItemInventory.Add(E_INVEN_CATEGORY.EQUIPMENT, new List<Item>());
+        //m_dicItemInventory.Add(E_INVEN_CATEGORY.ETC, new List<Item>());
+        //m_dicItemInventory.Add(E_INVEN_CATEGORY.QUICKABLE, new List<Item>());
+
+        //Item item = ItemManager.Instance.CreateItem("1001");
+        //AddItem(item);
+
+        //Item item2 = ItemManager.Instance.CreateItem("1001");
+        //AddItem(item2);
+
+        //Item item3 = ItemManager.Instance.CreateItem("1001");
+        //AddItem(item3);
+
+        //Item item4 = ItemManager.Instance.CreateItem("1001");
+        //AddItem(item4);
     }
 
     E_INVEN_CATEGORY GetItemInvenCategory(E_ITEMCATEGORY itemType)
@@ -43,6 +56,11 @@ public class InventoryManager : Singleton<InventoryManager>
 
     int SortByGrade(Item a, Item b)
     {
+        if(a.ItemGrade == b.ItemGrade)
+        {
+            return a.Name.CompareTo(b.Name);
+        }
+
         return a.ItemGrade.CompareTo(b.ItemGrade);
     }
 
@@ -98,6 +116,8 @@ public class InventoryManager : Singleton<InventoryManager>
             list.Remove(item);
         }
 
+        Debug.Log($"Item Remove Success Part : {item.ItemCategory}, itemUID : {item.ItemUID}, item : {item.ItemID}");
+
         SavePlayerInvenData();
     }
 
@@ -113,6 +133,12 @@ public class InventoryManager : Singleton<InventoryManager>
         if(list != null)
         {
             list.Add(item);
+        }
+        else
+        {
+            list = new List<Item>();
+            list.Add(item);
+            m_dicItemInventory.Add(type, list);
         }
 
         SavePlayerInvenData();
@@ -139,7 +165,7 @@ public class InventoryManager : Singleton<InventoryManager>
         return true;
     }
 
-    void SavePlayerInvenData()
+    public void SavePlayerInvenData()
     {
         SerializeItemTable table = new SerializeItemTable();
 
@@ -147,14 +173,14 @@ public class InventoryManager : Singleton<InventoryManager>
         {
             foreach (var item in itemList.Value)
             {
-                var type = GetItemInvenCategory(item.ItemCategory);
+              //  var type = GetItemInvenCategory(item.ItemCategory);
                 table.insertItem(item.ItemUID, item.ItemID);
             }
         }
         JsonManager.Instance.SaveJsonPlayerPrefs("myInvenData", table);
     }
 
-    void LoadPlayerInvenData()
+    public void LoadPlayerInvenData()
     {
         m_dicItemInventory.Clear();
         m_dicItemInventory.Add(E_INVEN_CATEGORY.EQUIPMENT, new List<Item>());

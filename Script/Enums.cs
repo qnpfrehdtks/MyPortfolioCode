@@ -16,6 +16,7 @@ public enum E_CHARACTER_TYPE
     MONSTER,
     NPC,
     PLAYER,
+    DUMMY_PLAYER,
     END
 }
 

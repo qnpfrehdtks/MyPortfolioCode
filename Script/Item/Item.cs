@@ -8,6 +8,16 @@ public class Item
     ItemStat m_Stat;
     ICombatEntity m_Owner;
 
+    int m_ItemLv;
+
+    public bool IsEuipped
+    {
+        get
+        {
+            return m_Owner == null ? false : true;
+        }
+    }
+
     public ItemStat Stat
     {
         get { return m_Stat; }
@@ -16,6 +26,11 @@ public class Item
     public string Name
     {
         get { return m_Stat.myName; }
+    }
+
+    public int ItemLevel
+    {
+        get { return m_ItemLv; }
     }
 
     public string ItemUID

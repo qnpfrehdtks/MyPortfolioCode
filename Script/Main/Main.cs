@@ -6,20 +6,19 @@ public abstract class SceneMain : MonoBehaviour
 {
     [SerializeField]
     protected E_SCENE_TYPE m_SceneType;
-
-
     protected bool m_isInit = false;
-
 
     virtual protected void Awake()
     {
         OnInitializeScene();
+        SceneChanger.Instance.m_currentMain = this;
     }
-
 
     virtual public void ExitSceneInit()
     {
-        UIManager.Instance.ClosePopUp();
+        UIManager.Instance.AllClosePopUI();
+        UIManager.Instance.AllCloseSceneUI();
+        CharacterManager.Instance.AllPushCharacter();
     }
 
     public abstract void OnInitializeScene();
